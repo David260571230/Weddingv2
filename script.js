@@ -16,19 +16,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // const turnstileToken = turnstile.getResponse();
+      const turnstileToken = turnstile.getResponse();
 
-      // if (!turnstileToken) {
-      //   showMessage("Please complete the verification.", true);
-      //   return;
-      // }
+      if (!turnstileToken) {
+        showMessage("Please complete the verification.", true);
+        return;
+      }
 
       const formData = {
         name: document.getElementById("name").value.trim(),
         email: document.getElementById("email").value.trim(),
         attending_count: parseInt(document.getElementById("attending_count").value || "0"),
         dietary_notes: document.getElementById("dietary_notes").value.trim(),
-        turnstile_token: document.querySelector('.cf-turnstile-response').value
+        turnstile_token: turnstileToken // document.querySelector('.cf-turnstile-response').value
       };
 
       console.log(JSON.stringify(formData))
