@@ -26,8 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const formData = {
         name: document.getElementById("name").value.trim(),
         email: document.getElementById("email").value.trim(),
-        plusOnes: parseInt(document.getElementById("plusOnes").value || "0"),
-        dietary: document.getElementById("dietary_notes").value.trim(),
+        attending_count: parseInt(document.getElementById("attending_count").value || "0"),
+        dietary_notes: document.getElementById("dietary_notes").value.trim(),
         turnstile_token: turnstileToken
       };
 
