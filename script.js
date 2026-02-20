@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!turnstileToken) {
         showMessage("Please complete the verification.", true);
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         return;
       }
 
