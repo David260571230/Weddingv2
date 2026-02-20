@@ -31,6 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
         turnstile_token: turnstileToken
       };
 
+      console.log(JSON.stringify(formData))
+
       try {
         const response = await fetch("/api/rsvp", {
           method: "POST",
