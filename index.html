@@ -4,12 +4,16 @@
   <meta charset="UTF-8">
   <title>Our Wedding</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="script.js"></script>
 </head>
 <body>
   <main>
     <h1>Welcome to Our Wedding!</h1>
     <p>We can’t wait to celebrate with you.</p>
     <a href="rsvp.html" class="button">RSVP Now</a>
+    <div class="cf-turnstile" data-sitekey="YOUR_SITE_KEY"></div>
+    <p id="form-message"></p>
   </main>
 </body>
 </html>
