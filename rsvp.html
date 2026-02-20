@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RSVP</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+  <main>
+    <h1>RSVP</h1>
+    <p>Please submit your RSVP by <strong>MM/DD/YYYY</strong>.</p>
+
+    <form id="rsvp-form">
+      <label>Name:<br>
+        <input type="text" name="name" required>
+      </label><br><br>
+
+      <label>Email:<br>
+        <input type="email" name="email" required>
+      </label><br><br>
+
+      <label>Number of Guests:<br>
+        <input type="number" name="attending_count" min="0" max="5" value="1" required>
+      </label><br><br>
+
+      <label>
+        <input type="checkbox" name="extended_invite">
+        I have an extended invite
+      </label><br><br>
+
+      <label>Dietary Notes:<br>
+        <input type="text" name="dietary_notes">
+      </label><br><br>
+
+      <!-- Turnstile widget -->
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAACgDGnZ3bqQcsvMO"></div><br>
+
+      <button type="submit">Submit RSVP</button>
+    </form>
+
+    <div id="message"></div>
+
+    <script src="script.js"></script>
+  </main>
+</body>
+</html>
