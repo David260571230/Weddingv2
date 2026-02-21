@@ -37,7 +37,7 @@ let widgetId = null; // Track the Turnstile widget
   if (rsvpForm) {
     rsvpForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      showMessage("Sending...", false);
+      showMessage("Saving your spot...", false);
 
       const turnstileToken = typeof turnstile !== "undefined" ? turnstile.getResponse() : null;
 
@@ -61,17 +61,30 @@ let widgetId = null; // Track the Turnstile widget
           body: JSON.stringify(formData)
         });
 
-        const result = await response.json();
+        // const result = await response.json();
 
         if (response.ok) {
-          // Success: Hide form and show message
-          rsvpSection.style.maxHeight = "0px";
-          rsvpSection.style.opacity = "0";
+          // 1. Show the success message
+          showMessage("RSVP Saved! We can't wait to see you. 🌿", false);
+          
+          // 2. Clear the form and reset Turnstile
+          rsvpForm.reset();
+          if (typeof turnstile !== "undefined") turnstile.reset();
+
+          // 3. Wait 2 seconds so they can read the message, then auto-hide
           setTimeout(() => {
-            rsvpSection.style.display = "none";
-            showMessage("Thank you! We've received your RSVP. 🌿", false);
-          }, 500);
+            rsvpSection.style.maxHeight = "0";
+            rsvpSection.style.opacity = "0";
+            
+            setTimeout(() => {
+              rsvpBtn.classList.remove("hidden");
+              messageBox.textContent = ""; // Clear message for next time
+              turnstileContainer.innerHTML = ""; // Clean up
+            }, 600);
+          }, 2000);
+
         } else {
+          const result = await response.json();
           showMessage(result.error || "Something went wrong.", true);
         }
       } catch (error) {
