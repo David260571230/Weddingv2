@@ -9,24 +9,29 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =========================
     MAIN RSVP LOGIC
   ========================== */
-  rsvpBtn.addEventListener("click", () => {
-    rsvpSection.style.maxHeight = "1500px"; // Set to a large enough value
-    rsvpSection.style.opacity = "1";
-    rsvpBtn.classList.add("hidden");
-  });
+  if (rsvpBtn) {
+    rsvpBtn.addEventListener("click", () => {
+      rsvpSection.style.maxHeight = "1500px"; // Set to a large enough value
+      rsvpSection.style.opacity = "1";
+      rsvpBtn.classList.add("hidden");
+    });
+  }
+
 
   // CLOSE Logic
-  hideBtn.addEventListener("click", () => {
-    rsvpSection.style.maxHeight = "0";
-    rsvpSection.style.opacity = "0";
-    
-    // Give it time to animate before showing the main button again
-    setTimeout(() => {
-      rsvpBtn.classList.remove("hidden");
-      // Optional: Clear Turnstile so it refreshes next time
-      turnstileContainer.innerHTML = "";
-    }, 600);
-  });
+  if (rsvpBtn) {
+    hideBtn.addEventListener("click", () => {
+      rsvpSection.style.maxHeight = "0";
+      rsvpSection.style.opacity = "0";
+      
+      // Give it time to animate before showing the main button again
+      setTimeout(() => {
+        rsvpBtn.classList.remove("hidden");
+        // Optional: Clear Turnstile so it refreshes next time
+        turnstileContainer.innerHTML = "";
+      }, 600);
+    });
+  }
 
   // 2. Form Submission
   if (rsvpForm) {
