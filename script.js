@@ -1,41 +1,41 @@
 document.addEventListener("DOMContentLoaded", () => {
-
-  /* =========================
-     RSVP SUBMISSION LOGIC
-  ========================== */
-
+  const rsvpBtn = document.getElementById("toggle-rsvp");
+  const rsvpSection = document.getElementById("rsvp-section");
   const rsvpForm = document.getElementById("rsvp-form");
   const messageBox = document.getElementById("form-message");
 
+  // 1. Reveal Form Logic
+  rsvpBtn.addEventListener("click", () => {
+    rsvpSection.classList.toggle("open");
+    if (rsvpSection.classList.contains("open")) {
+      rsvpBtn.style.display = "none"; // Hide button once opened
+      rsvpSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  // 2. Form Submission
   if (rsvpForm) {
     rsvpForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      showMessage("Sending...", false);
 
-      if (typeof turnstile === "undefined") {
-        showMessage("Verification system not loaded. Please refresh.", true);
-        return;
-      }
-
-      const turnstileToken = turnstile.getResponse();
+      const turnstileToken = typeof turnstile !== "undefined" ? turnstile.getResponse() : null;
 
       if (!turnstileToken) {
         showMessage("Please complete the verification.", true);
-        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         return;
       }
 
       const formData = {
         name: document.getElementById("name").value.trim(),
         email: document.getElementById("email").value.trim(),
-        attending_count: parseInt(document.getElementById("attending_count").value || "0"),
+        attending_count: parseInt(document.getElementById("attending_count").value || "1"),
         dietary_notes: document.getElementById("dietary_notes").value.trim(),
-        turnstile_token: turnstileToken // document.querySelector('.cf-turnstile-response').value
+        turnstile_token: turnstileToken
       };
 
-      console.log(JSON.stringify(formData))
-
       try {
-        const response = await fetch("/api/rsvp", {
+        const response = await fetch("https://YOUR-WORKER-URL.workers.dev/api/rsvp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData)
@@ -44,87 +44,24 @@ document.addEventListener("DOMContentLoaded", () => {
         const result = await response.json();
 
         if (response.ok) {
-          showMessage("Thank you! Your RSVP has been received 💍");
-          rsvpForm.reset();
-          turnstile.reset();
+          // Success: Hide form and show message
+          rsvpSection.style.maxHeight = "0px";
+          rsvpSection.style.opacity = "0";
+          setTimeout(() => {
+            rsvpSection.style.display = "none";
+            showMessage("Thank you! We've received your RSVP. 🌿", false);
+          }, 500);
         } else {
           showMessage(result.error || "Something went wrong.", true);
         }
-
       } catch (error) {
         showMessage("Network error. Please try again.", true);
-        console.error(error);
       }
     });
   }
 
-  function showMessage(text, isError = false) {
-    if (!messageBox) return;
+  function showMessage(text, isError) {
     messageBox.textContent = text;
-    messageBox.style.color = isError ? "red" : "green";
+    messageBox.className = `mt-6 text-sm font-medium ${isError ? 'text-red-500' : 'text-green-600'}`;
   }
-
-
-  /* =========================
-     ADMIN PANEL LOGIC
-  ========================== */
-
-  const adminLoginForm = document.getElementById("admin-login-form");
-  const adminPanel = document.getElementById("admin-panel");
-  const rsvpList = document.getElementById("rsvp-list");
-
-  if (adminLoginForm) {
-    adminLoginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const password = document.getElementById("admin-password").value;
-
-      try {
-        const response = await fetch("/api/admin", {
-          method: "GET",
-          headers: {
-            "x-admin-password": password
-          }
-        });
-
-        if (!response.ok) {
-          alert("Invalid password");
-          return;
-        }
-
-        const data = await response.json();
-
-        adminLoginForm.style.display = "none";
-        adminPanel.style.display = "block";
-
-        renderRSVPs(data);
-
-      } catch (error) {
-        alert("Error loading admin data.");
-        console.error(error);
-      }
-    });
-  }
-
-  function renderRSVPs(data) {
-    if (!rsvpList) return;
-
-    rsvpList.innerHTML = "";
-
-    data.forEach((entry) => {
-      const item = document.createElement("div");
-      item.classList.add("rsvp-entry");
-
-      item.innerHTML = `
-        <strong>${entry.name}</strong><br>
-        Email: ${entry.email}<br>
-        +1s: ${entry.plusOnes}<br>
-        Submitted: ${new Date(entry.timestamp).toLocaleString()}
-        <hr>
-      `;
-
-      rsvpList.appendChild(item);
-    });
-  }
-
 });
