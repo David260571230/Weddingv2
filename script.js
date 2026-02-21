@@ -7,10 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
   rsvpBtn.addEventListener("click", () => {
     rsvpSection.classList.add("open");
     rsvpBtn.style.display = "none";
-    if (rsvpSection.classList.contains("open")) {
+    /* if (rsvpSection.classList.contains("open")) {
       rsvpBtn.style.display = "none"; // Hide button once opened
       rsvpSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    } */
     
     // Explicitly render Turnstile once the section is visible
     if (typeof turnstile !== "undefined") {
