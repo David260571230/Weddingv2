@@ -38,56 +38,28 @@
 <body class="text-gray-800">
 
   <main class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-    <div class="max-w-2xl w-full bg-white p-10 rounded-2xl shadow-sm border border-gray-100">
-      
-      <h1 class="text-5xl mb-4 text-eucalyptus italic">Our Wedding</h1>
-      <p class="text-xl font-light mb-8 tracking-wide">We can't wait to celebrate with you.</p>
+    <button id="toggle-rsvp" class="bg-eucalyptus hover:bg-black text-white px-10 py-3 rounded-full transition-all duration-300 tracking-widest text-sm uppercase">
+      RSVP Now
+    </button>
 
-      <button id="toggle-rsvp" class="bg-eucalyptus hover:bg-black text-white px-10 py-3 rounded-full transition-all duration-300 tracking-widest text-sm uppercase">
-        RSVP Now
-      </button>
+    <div id="rsvp-section" class="mt-8 text-left border-t border-lavender pt-8 overflow-hidden transition-all duration-700 ease-in-out" style="max-height: 0; opacity: 0;">
+      <form id="rsvp-form" class="space-y-4">
+        <div id="turnstile-container" class="flex justify-center py-4"></div>
 
-      <div id="rsvp-section" class="mt-8 text-left border-t border-lavender pt-8">
-        <form id="rsvp-form" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-1">Full Name</label>
-            <input type="text" id="name" required class="w-full border-b-2 border-lavender p-2 outline-none focus:border-eucalyptus transition-colors bg-transparent">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium mb-1">Email Address</label>
-            <input type="email" id="email" required class="w-full border-b-2 border-lavender p-2 outline-none focus:border-eucalyptus transition-colors bg-transparent">
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium mb-1">Number Attending</label>
-              <input type="number" id="attending_count" min="0" max="5" value="1" class="w-full border-b-2 border-lavender p-2 outline-none focus:border-eucalyptus bg-transparent">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium mb-1">Dietary Notes</label>
-            <textarea id="dietary_notes" rows="2" placeholder="Allergies, etc." class="w-full border-b-2 border-lavender p-2 outline-none focus:border-eucalyptus bg-transparent"></textarea>
-          </div>
-
-          <div id="turnstile-container" class="flex justify-center py-4"></div>
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAACgDGnZ3bqQcsvMO"></div>
-          </div>
-
-          <button type="submit" class="w-full bg-eucalyptus text-white py-3 rounded-md hover:shadow-lg transition-shadow">
+        <div class="flex flex-col gap-3 mt-6">
+          <button type="submit" class="w-full bg-eucalyptus text-white py-3 rounded-md hover:shadow-lg transition-shadow font-medium">
             Submit RSVP
           </button>
-
+          
           <button type="button" id="hide-rsvp" class="w-full text-gray-400 text-xs uppercase tracking-widest hover:text-eucalyptus transition-colors py-2">
             Close Form
           </button>
-        </form>
-      </div>
-
-      <p id="form-message" class="mt-6 text-sm font-medium min-h-[1.5rem]"></p>
+        </div>
+      </form>
     </div>
   </main>
 
 </body>
 </html>
+
+<!-- siteKey: 0x4AAAAAACgDGnZ3bqQcsvMO-->>

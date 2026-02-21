@@ -1,39 +1,36 @@
 document.addEventListener("DOMContentLoaded", () => {
   const rsvpBtn = document.getElementById("toggle-rsvp");
   const rsvpSection = document.getElementById("rsvp-section");
-  const rsvpForm = document.getElementById("rsvp-form");
-  const messageBox = document.getElementById("form-message");
+  const hideBtn = document.getElementById("hide-rsvp");
+  const turnstileContainer = document.getElementById("turnstile-container");
 
+let widgetId = null; // Track the Turnstile widget
+
+  // OPEN Logic
   rsvpBtn.addEventListener("click", () => {
-    rsvpSection.classList.add("open");
-    rsvpBtn.style.display = "none";
-    /* if (rsvpSection.classList.contains("open")) {
-      rsvpBtn.style.display = "none"; // Hide button once opened
-      rsvpSection.scrollIntoView({ behavior: 'smooth' });
-    } */
-    
-    // Explicitly render Turnstile once the section is visible
-    if (typeof turnstile !== "undefined") {
-      turnstile.render("#turnstile-container", {
-        sitekey: '0x4AAAAAACgDGnZ3bqQcsvMO', // <-- Put your 0x key here!
-        callback: function(token) {
-          console.log(`Challenge Success`);
-        },
+    rsvpSection.style.maxHeight = "1500px"; // Set to a large enough value
+    rsvpSection.style.opacity = "1";
+    rsvpBtn.classList.add("hidden");
+
+    // Only render if there isn't already a widget
+    if (typeof turnstile !== "undefined" && turnstileContainer.innerHTML === "") {
+      widgetId = turnstile.render("#turnstile-container", {
+        sitekey: '0x4AAAAAAAxYhC_1X_O9zX_k', // Your actual site key
       });
     }
-    
-    setTimeout(() => {
-      rsvpSection.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
   });
 
-  // Hide the form
+  // CLOSE Logic
   hideBtn.addEventListener("click", () => {
-    rsvpSection.classList.remove("open");
-    // Wait for the slide-up animation to finish before showing the main button again
+    rsvpSection.style.maxHeight = "0";
+    rsvpSection.style.opacity = "0";
+    
+    // Give it time to animate before showing the main button again
     setTimeout(() => {
       rsvpBtn.classList.remove("hidden");
-    }, 500);
+      // Optional: Clear Turnstile so it refreshes next time
+      turnstileContainer.innerHTML = "";
+    }, 600);
   });
 
   // 2. Form Submission
