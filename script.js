@@ -55,7 +55,7 @@ let widgetId = null; // Track the Turnstile widget
       };
 
       try {
-        const response = await fetch("https://YOUR-WORKER-URL.workers.dev/api/rsvp", {
+        const response = await fetch("https://marblehousewedding.com/api/rsvp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData)
