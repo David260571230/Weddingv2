@@ -1,93 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Our Wedding | RSVP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  <script src="script.js" defer></script>
-  
-  <style>
-    :root {
-      --eucalyptus: #5f8670;
-      --lavender: #e6e6fa;
-      --deep-eucalyptus: #4a6a58;
-    }
-    body { font-family: 'Lato', sans-serif; background-color: #fdfdfd; }
-    h1, h2 { font-family: 'Playfair Display', serif; }
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Wedding | RSVP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script src="script.js" defer></script>
     
-    .bg-eucalyptus { background-color: var(--eucalyptus); }
-    .text-eucalyptus { color: var(--eucalyptus); }
-    .bg-lavender { background-color: var(--lavender); }
-    
-    /* Reveal Animation */
-    #rsvp-section {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.8s ease-in-out, opacity 0.5s ease;
-      opacity: 0;
-    }
-    #rsvp-section.open {
-      max-height: 1200px; /* Large enough for the form */
-      opacity: 1;
-    }
-  </style>
-</head>
-<body class="text-gray-800">
+    <style>
+      :root {
+        --eucalyptus: #5f8670;
+        --lavender: #e6e6fa;
+        --deep-eucalyptus: #4a6a58;
+      }
+      body { font-family: 'Lato', sans-serif; background-color: #fdfdfd; }
+      h1, h2 { font-family: 'Playfair Display', serif; }
+      
+      .bg-eucalyptus { background-color: var(--eucalyptus); }
+      .text-eucalyptus { color: var(--eucalyptus); }
+      .bg-lavender { background-color: var(--lavender); }
+      
+      /* Reveal Animation */
+      #rsvp-section {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.8s ease-in-out, opacity 0.5s ease;
+        opacity: 0;
+      }
+      #rsvp-section.open {
+        max-height: 1200px; /* Large enough for the form */
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body class="text-gray-800">
 
-  <main class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-    <h1 class="text-5xl mb-4 text-eucalyptus italic">Our Wedding</h1>
-    <p class="text-xl font-light mb-8 tracking-wide">We can't wait to celebrate with you.</p>
+    <main class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+      <h1 class="text-5xl mb-4 text-eucalyptus italic">Our Wedding</h1>
+      <p class="text-xl font-light mb-8 tracking-wide">We can't wait to celebrate with you.</p>
 
-    <button id="toggle-rsvp" class="bg-eucalyptus hover:bg-black text-white px-10 py-3 rounded-full transition-all duration-300 tracking-widest text-sm uppercase">
-      RSVP Now
-    </button>
+      <button id="toggle-rsvp" class="bg-eucalyptus hover:bg-black text-white px-10 py-3 rounded-full transition-all duration-300 tracking-widest text-sm uppercase">
+        RSVP Now
+      </button>
 
-    <div id="rsvp-section" class="mt-8 text-left border-t border-lavender pt-8 overflow-hidden transition-all duration-700 ease-in-out" style="max-height: 0; opacity: 0;">
-      <form id="rsvp-form" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium mb-1">Full Name</label>
-          <input type="text" id="name" required class="w-full border-b-2 border-lavender p-2 outline-none focus:border-eucalyptus transition-colors bg-transparent">
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium mb-1">Email Address</label>
-          <input type="email" id="email" required class="w-full border-b-2 border-lavender p-2 outline-none focus:border-eucalyptus transition-colors bg-transparent">
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
+      <div id="rsvp-section" class="mt-8 text-left border-t border-lavender pt-8 overflow-hidden transition-all duration-700 ease-in-out" style="max-height: 0; opacity: 0;">
+        <form id="rsvp-form" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-1">Number Attending</label>
-            <input type="number" id="attending_count" min="0" max="5" value="1" class="w-full border-b-2 border-lavender p-2 outline-none focus:border-eucalyptus bg-transparent">
+            <label class="block text-sm font-medium mb-1">Full Name</label>
+            <input type="text" id="name" required class="w-full border-b-2 border-lavender p-2 outline-none focus:border-eucalyptus transition-colors bg-transparent">
           </div>
-        </div>
 
-        <div>
-          <label class="block text-sm font-medium mb-1">Dietary Notes</label>
-          <textarea id="dietary_notes" rows="2" placeholder="Allergies, etc." class="w-full border-b-2 border-lavender p-2 outline-none focus:border-eucalyptus bg-transparent"></textarea>
-        </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Email Address</label>
+            <input type="email" id="email" required class="w-full border-b-2 border-lavender p-2 outline-none focus:border-eucalyptus transition-colors bg-transparent">
+          </div>
 
-        <div id="turnstile-container" class="flex justify-center py-4">
-          <div class="cf-turnstile" data-sitekey="0x4AAAAAACgDGnZ3bqQcsvMO"></div>
-        </div>
+          <div class="flex items-center space-x-3 py-2">
+            <input type="checkbox" id="plus_one" class="w-5 h-5 accent-eucalyptus cursor-pointer">
+            <label for="plus_one" class="text-sm font-medium cursor-pointer">I'm bringing a plus one</label>
+          </div>
 
-        <div class="flex flex-col gap-3 mt-6">
-          <button type="submit" class="w-full bg-eucalyptus text-white py-3 rounded-md hover:shadow-lg transition-shadow font-medium">
-            Submit RSVP
-          </button>
-          
-          <button type="button" id="hide-rsvp" class="w-full text-gray-400 text-xs uppercase tracking-widest hover:text-eucalyptus transition-colors py-2">
-            Close Form
-          </button>
-        </div>
-      </form>
-      <p id="form-message" class="mt-6 text-sm font-medium min-h-[1.5rem]"></p>
-    </div>
-  </main>
+          <div>
+            <label class="block text-sm font-medium mb-1">Dietary Notes</label>
+            <textarea id="dietary_notes" rows="2" placeholder="Allergies, etc." class="w-full border-b-2 border-lavender p-2 outline-none focus:border-eucalyptus bg-transparent"></textarea>
+          </div>
 
-</body>
+          <div id="turnstile-container" class="flex justify-center py-4">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAACgDGnZ3bqQcsvMO"></div>
+          </div>
+
+          <p id="form-message" class="mt-6 text-sm font-medium min-h-[1.5rem]"></p>
+          <div class="flex flex-col gap-3 mt-6">
+            <button type="submit" class="w-full bg-eucalyptus text-white py-3 rounded-md hover:shadow-lg transition-shadow font-medium">
+              Submit RSVP
+            </button>
+            
+            <button type="button" id="hide-rsvp" class="w-full text-gray-400 text-xs uppercase tracking-widest hover:text-eucalyptus transition-colors py-2">
+              Close Form
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </body>
 </html>
 
 <!-- siteKey: 0x4AAAAAACgDGnZ3bqQcsvMO-->>

@@ -51,7 +51,7 @@ let widgetId = null; // Track the Turnstile widget
       const formData = {
         name: document.getElementById("name").value.trim(),
         email: document.getElementById("email").value.trim(),
-        attending_count: parseInt(document.getElementById("attending_count").value || "1"),
+        attending_count: document.getElementById("plus_one").checked ? 2 : 1,
         dietary_notes: document.getElementById("dietary_notes").value.trim(),
         turnstile_token: turnstileToken
       };
