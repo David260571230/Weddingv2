@@ -13,11 +13,11 @@ let widgetId = null; // Track the Turnstile widget
     rsvpBtn.classList.add("hidden");
 
     // Only render if there isn't already a widget
-    if (typeof turnstile !== "undefined" && turnstileContainer.innerHTML === "") {
+    /* if (typeof turnstile !== "undefined" && turnstileContainer.innerHTML === "") {
       widgetId = turnstile.render("#turnstile-container", {
         sitekey: '0x4AAAAAAAxYhC_1X_O9zX_k', // Your actual site key
       });
-    }
+    } */
   });
 
   // CLOSE Logic
