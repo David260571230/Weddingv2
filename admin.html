@@ -2,24 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Panel</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="script.js"></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <script src="script.js" defer></script>
+  <style>
+    body { font-family: 'Lato', sans-serif; }
+    h1 { font-family: 'Playfair Display', serif; }
+    .bg-eucalyptus { background-color: #5f8670; }
+  </style>
 </head>
-<body>
-  <main>
-    <h1>Admin Panel</h1>
+<body class="bg-gray-50 p-6">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl text-center mb-8 text-[#5f8670]">Guest List Manager</h1>
 
-    <label>Admin Password:
-      <input type="password" id="admin-password">
-      <button id="load-data">Load RSVPs</button>
-    </label>
+    <div id="admin-login-section" class="bg-white p-8 rounded-xl shadow-sm max-w-md mx-auto border border-gray-100">
+      <form id="admin-login-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-bold mb-2">Admin Password</label>
+          <input type="password" id="admin-password" class="w-full border-b-2 border-gray-200 p-2 outline-none focus:border-[#5f8670]" required>
+        </div>
+        <button type="submit" class="w-full bg-eucalyptus text-white py-2 rounded-lg hover:opacity-90 transition-opacity">Login</button>
+      </form>
+    </div>
 
-    <pre id="output"></pre>
-    <button id="download-csv">Download CSV</button>
-
-    <script src="script.js"></script>
-  </main>
+    <div id="admin-panel" class="hidden space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold">Confirmed RSVPs</h2>
+        <div class="text-sm bg-lavender px-4 py-2 rounded-full font-bold text-[#5f8670]">
+           Total Guests: <span id="total-count">0</span>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-gray-50 border-b border-gray-100">
+            <tr>
+              <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Name</th>
+              <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Party Size</th>
+              <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Dietary Notes</th>
+              <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Date</th>
+            </tr>
+          </thead>
+          <tbody id="rsvp-list">
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
