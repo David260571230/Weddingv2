@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Explicitly render Turnstile once the section is visible
     if (typeof turnstile !== "undefined") {
       turnstile.render("#turnstile-container", {
-        sitekey: 'YOUR_SITE_KEY_HERE', // <-- Put your 0x key here!
+        sitekey: '0x4AAAAAACgDGnZ3bqQcsvMO', // <-- Put your 0x key here!
         callback: function(token) {
           console.log(`Challenge Success`);
         },
@@ -25,6 +25,15 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       rsvpSection.scrollIntoView({ behavior: 'smooth' });
     }, 100);
+  });
+
+  // Hide the form
+  hideBtn.addEventListener("click", () => {
+    rsvpSection.classList.remove("open");
+    // Wait for the slide-up animation to finish before showing the main button again
+    setTimeout(() => {
+      rsvpBtn.classList.remove("hidden");
+    }, 500);
   });
 
   // 2. Form Submission
