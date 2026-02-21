@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const rsvpSection = document.getElementById("rsvp-section");
   const hideBtn = document.getElementById("hide-rsvp");
   const turnstileContainer = document.getElementById("turnstile-container");
+  const rsvpForm = document.getElementById("rsvp-form");
+  const messageBox = document.getElementById("form-message"); // Make sure this is defined too!
 
 let widgetId = null; // Track the Turnstile widget
 
