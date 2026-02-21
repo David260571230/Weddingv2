@@ -4,13 +4,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const rsvpForm = document.getElementById("rsvp-form");
   const messageBox = document.getElementById("form-message");
 
-  // 1. Reveal Form Logic
   rsvpBtn.addEventListener("click", () => {
-    rsvpSection.classList.toggle("open");
+    rsvpSection.classList.add("open");
+    rsvpBtn.style.display = "none";
     if (rsvpSection.classList.contains("open")) {
       rsvpBtn.style.display = "none"; // Hide button once opened
       rsvpSection.scrollIntoView({ behavior: 'smooth' });
     }
+    
+    // Explicitly render Turnstile once the section is visible
+    if (typeof turnstile !== "undefined") {
+      turnstile.render("#turnstile-container", {
+        sitekey: 'YOUR_SITE_KEY_HERE', // <-- Put your 0x key here!
+        callback: function(token) {
+          console.log(`Challenge Success`);
+        },
+      });
+    }
+    
+    setTimeout(() => {
+      rsvpSection.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   });
 
   // 2. Form Submission
