@@ -85,8 +85,24 @@
     }
 
     async function requestSong(trackId, trackName) {
-      // We'll build the "Save to D1" logic next!
-      alert("Coming soon: Requesting " + trackName);
+      try {
+        const response = await fetch('/api/request-song', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trackId, songName, artistName })
+        });
+
+        if (response.ok) {
+          alert(`Track requested: ${songName}! It will appear on the playlist once reviewed.`);
+          // Optional: Clear search after success
+          document.getElementById('song-search').value = '';
+          document.getElementById('search-results').innerHTML = '';
+        } else {
+          alert("Oops! Something went wrong with the request.");
+        }
+      } catch (err) {
+        console.error("Error submitting request:", err);
+      }
     }
   </script>
 </body>
