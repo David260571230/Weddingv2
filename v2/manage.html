@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf9f6; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .bg-eucalyptus { background-color: #5f8670; }
+        .text-eucalyptus { color: #5f8670; }
+        .border-lavender { border-color: #e6e6fa; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+    <div id="admin-login" class="max-w-md mx-auto mt-20 p-8 bg-white rounded-2xl shadow-sm border border-lavender text-center">
+        <h1 class="font-serif text-3xl mb-6 text-eucalyptus italic">Management Login</h1>
+        <input type="password" id="admin-pass" placeholder="Enter Password" 
+               class="w-full p-3 rounded-lg border border-gray-200 mb-4 focus:outline-none focus:border-eucalyptus">
+        <button onclick="loadAdminPanel()" class="w-full bg-eucalyptus text-white p-3 rounded-lg font-semibold hover:bg-opacity-90 transition">
+            Access Dashboard
+        </button>
+    </div>
+
+    <div id="admin-dashboard" class="hidden max-w-2xl mx-auto mt-10">
+        <div class="flex justify-between items-end mb-8 border-b border-lavender pb-4">
+            <h1 class="font-serif text-4xl text-eucalyptus">Request Queue</h1>
+            <button onclick="location.reload()" class="text-xs text-gray-400 hover:text-eucalyptus uppercase tracking-widest">Refresh</button>
+        </div>
+        
+        <div id="admin-song-list" class="space-y-4">
+            </div>
+    </div>
+
+    <script>
+        let currentPassword = "";
+
+        async function loadAdminPanel() {
+            const pass = document.getElementById('admin-pass').value;
+            const res = await fetch('/api/admin/get-requests', {
+                headers: { 'x-admin-password': pass }
+            });
+
+            if (res.ok) {
+                currentPassword = pass;
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                renderSongs(await res.json());
+            } else {
+                alert("Incorrect password");
+            }
+        }
+
+        function renderSongs(songs) {
+            const container = document.getElementById('admin-song-list');
+            if (songs.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 text-gray-400 italic">The queue is currently empty.</div>`;
+                return;
+            }
+
+            container.innerHTML = songs.map(s => `
+                <div class="flex justify-between items-center p-5 bg-white rounded-xl shadow-sm border border-lavender">
+                    <div>
+                        <div class="font-semibold text-gray-800">${s.song_name}</div>
+                        <div class="text-sm text-gray-500">${s.artist_name}</div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="processSong(${s.id}, '${s.track_id}', 'approve')" 
+                                class="bg-eucalyptus text-white px-4 py-2 rounded-full text-xs font-bold hover:shadow-md transition">
+                            Approve
+                        </button>
+                        <button onclick="processSong(${s.id}, null, 'dismiss')" 
+                                class="text-gray-400 px-4 py-2 rounded-full text-xs font-bold hover:text-red-400 transition">
+                            Dismiss
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function processSong(requestId, trackId, action) {
+            const endpoint = action === 'approve' ? '/api/admin/approve-song' : '/api/admin/dismiss-song';
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-admin-password': currentPassword 
+                },
+                body: JSON.stringify({ requestId, trackId })
+            });
+            
+            if (res.ok) {
+                // Refresh the list after action
+                const refreshRes = await fetch('/api/admin/get-requests', {
+                    headers: { 'x-admin-password': currentPassword }
+                });
+                renderSongs(await refreshRes.json());
+            }
+        }
+    </script>
+</body>
+</html>
