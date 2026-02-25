@@ -69,35 +69,43 @@
     });
 
     function displayResults(tracks) {
-      resultsContainer.innerHTML = tracks.map(track => `
-        <div class="flex items-center p-3 bg-white border border-lavender rounded-xl hover:shadow-md transition-shadow">
-          <img src="${track.album.images[2].url}" class="w-12 h-12 rounded-md mr-4">
-          <div class="flex-1">
-            <div class="font-bold text-sm">${track.name}</div>
-            <div class="text-xs text-gray-500">${track.artists[0].name}</div>
+      resultsContainer.innerHTML = tracks.map(track => {
+        // Escape single quotes for artist name too
+        const artistName = track.artists[0].name.replace(/'/g, "\\'");
+        const trackName = track.name.replace(/'/g, "\\'");
+        
+        return `
+          <div class="flex items-center p-3 bg-white border border-lavender rounded-xl hover:shadow-md transition-shadow">
+            <img src="${track.album.images[2].url}" class="w-12 h-12 rounded-md mr-4">
+            <div class="flex-1">
+              <div class="font-bold text-sm">${track.name}</div>
+              <div class="text-xs text-gray-500">${track.artists[0].name}</div>
+            </div>
+            <button onclick="requestSong('${track.id}', '${trackName}', '${artistName}')" 
+                    class="text-xs font-bold text-[#5f8670] uppercase tracking-wider hover:underline">
+              Request
+            </button>
           </div>
-          <button onclick="requestSong('${track.id}', '${track.name.replace(/'/g, "\\'")}')" 
-                  class="text-xs font-bold text-eucalyptus uppercase tracking-wider hover:underline">
-            Request
-          </button>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    async function requestSong(trackId, trackName) {
+    async function requestSong(trackId, songName, artistName) {
       try {
         const response = await fetch('/api/request-song', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          // Now songName and artistName are correctly defined
           body: JSON.stringify({ trackId, songName, artistName })
         });
 
         if (response.ok) {
           alert(`Track requested: ${songName}! It will appear on the playlist once reviewed.`);
-          // Optional: Clear search after success
           document.getElementById('song-search').value = '';
           document.getElementById('search-results').innerHTML = '';
         } else {
+          const errorText = await response.text();
+          console.error("Server error:", errorText);
           alert("Oops! Something went wrong with the request.");
         }
       } catch (err) {
