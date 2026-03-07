@@ -35,16 +35,37 @@
 
     <div class="text-center">
       <h2 class="font-serif text-3xl text-gray-700 mb-8">On the Playlist</h2>
-      <div class="max-w-2xl mx-auto rounded-xl overflow-hidden shadow-sm">
-        <iframe 
-          src="https://open.spotify.com/embed/playlist/3t9hzhaYwdbWwzOufs6882?utm_source=generator&theme=0" 
-          width="100%" height="452" frameborder="0" 
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-          style="border-radius:12px;">
-        </iframe>
-      </div>
+      <div id="embed-container" class="max-w-2xl mx-auto rounded-xl overflow-hidden shadow-sm"></div>
     </div>
+
+    <script src="https://open.spotify.com/embed/iframe-api/v1"></script>
+    <script>
+      let isPlaying = false;
+      let embedController = null;
+
+      window.onSpotifyIframeApiReady = (IFrameAPI) => {
+        const container = document.getElementById('embed-container');
+        const options = {
+          uri: 'spotify:playlist:3t9hzhaYwdbWwzOufs6882',
+          width: '100%',
+          height: 452,
+          theme: '0'
+        };
+
+        IFrameAPI.createController(container, options, (controller) => {
+          embedController = controller;
+          controller.addListener('playback_update', (e) => {
+            isPlaying = !e.data.isPaused;
+          });
+        });
+      };
+
+      setInterval(() => {
+        if (!isPlaying && embedController) {
+          embedController.loadUri('spotify:playlist:3t9hzhaYwdbWwzOufs6882');
+        }
+      }, 30000);
+    </script>
   </main>
 
   <script>
