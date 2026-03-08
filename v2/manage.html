@@ -343,20 +343,22 @@
     }
 
     // ==================== INIT ====================
-    // Load all data once auth gate confirms password
+    // Poll until auth is ready and functions are available
     function initDashboard() {
       loadRSVPs();
       loadSongs();
       loadPhotos();
     }
 
-    // If auth already completed before this script ran, init now
-    // Otherwise wait for the event
-    if (window._authReady) {
-      initDashboard();
-    } else {
-      window.addEventListener('authReady', initDashboard);
+    function waitForAuth() {
+      // Check if global.js has loaded AND auth is complete
+      if (typeof getAdminPassword === 'function' && sessionStorage.getItem('v2_admin_pass')) {
+        initDashboard();
+      } else {
+        setTimeout(waitForAuth, 100);
+      }
     }
+    waitForAuth();
   </script>
 </body>
 </html>

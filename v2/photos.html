@@ -241,12 +241,15 @@
       uploadBtn.textContent = 'UPLOAD';
     });
 
-    // Load gallery once auth gate completes
-    if (window._authReady) {
-      loadGallery();
-    } else {
-      window.addEventListener('authReady', loadGallery);
+    // Load gallery once auth is ready
+    function waitForAuth() {
+      if (typeof getAdminPassword === 'function' && sessionStorage.getItem('v2_admin_pass')) {
+        loadGallery();
+      } else {
+        setTimeout(waitForAuth, 100);
+      }
     }
+    waitForAuth();
   </script>
 </body>
 </html>
