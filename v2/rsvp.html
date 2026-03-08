@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSVP | Our Wedding</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="global.js" defer></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .font-sans { font-family: 'Lato', sans-serif; }
+    #rsvp-section {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.8s ease-in-out, opacity 0.5s ease;
+    }
+    #rsvp-section.open {
+      max-height: 1200px;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="font-sans bg-[#fdfdfd] text-gray-800">
+
+  <div id="nav-placeholder"></div>
+
+  <main class="max-w-xl mx-auto py-20 px-6 text-center">
+    <span class="text-[#5f8670] text-3xl mb-4 block">💌</span>
+    <h1 class="font-serif text-5xl text-[#5f8670] mb-4">RSVP</h1>
+    <p class="text-gray-500 italic mb-10">We'd love to know you're coming. Let us know below!</p>
+
+    <button id="toggle-rsvp" 
+      class="inline-block border border-[#5f8670] text-[#5f8670] px-10 py-3 hover:bg-[#5f8670] hover:text-white transition-all duration-300 tracking-widest uppercase text-sm">
+      Respond Now
+    </button>
+
+    <div id="rsvp-section" class="mt-10 text-left">
+      <form id="rsvp-form" class="space-y-6 bg-white p-8 rounded-2xl shadow-sm border border-[#e6e6fa]">
+        
+        <div>
+          <label class="block text-sm font-medium mb-1 text-gray-600">Full Name</label>
+          <input type="text" id="name" required 
+            class="w-full border-b-2 border-[#e6e6fa] p-2 outline-none focus:border-[#5f8670] transition-colors bg-transparent">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1 text-gray-600">Email Address</label>
+          <input type="email" id="email" required 
+            class="w-full border-b-2 border-[#e6e6fa] p-2 outline-none focus:border-[#5f8670] transition-colors bg-transparent">
+        </div>
+
+        <div class="flex items-center space-x-3 py-2">
+          <input type="checkbox" id="plus_one" class="w-5 h-5 accent-[#5f8670] cursor-pointer">
+          <label for="plus_one" class="text-sm font-medium cursor-pointer text-gray-600">I'm bringing a plus one</label>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1 text-gray-600">Dietary Notes</label>
+          <textarea id="dietary_notes" rows="2" placeholder="Allergies, preferences, etc."
+            class="w-full border-b-2 border-[#e6e6fa] p-2 outline-none focus:border-[#5f8670] bg-transparent"></textarea>
+        </div>
+
+        <div id="turnstile-container" class="flex justify-center py-2">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAACgDGnZ3bqQcsvMO"></div>
+        </div>
+
+        <p id="form-message" class="text-sm font-medium min-h-[1.5rem]"></p>
+
+        <div class="flex flex-col gap-3">
+          <button type="submit" 
+            class="w-full bg-[#5f8670] text-white py-3 rounded-full hover:shadow-lg transition-shadow font-medium tracking-widest uppercase text-sm">
+            Submit RSVP
+          </button>
+          <button type="button" id="hide-rsvp" 
+            class="w-full text-gray-400 text-xs uppercase tracking-widest hover:text-[#5f8670] transition-colors py-2">
+            Close Form
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const rsvpBtn = document.getElementById('toggle-rsvp');
+      const rsvpSection = document.getElementById('rsvp-section');
+      const hideBtn = document.getElementById('hide-rsvp');
+      const rsvpForm = document.getElementById('rsvp-form');
+      const messageBox = document.getElementById('form-message');
+      const turnstileContainer = document.getElementById('turnstile-container');
+
+      // Open
+      rsvpBtn.addEventListener('click', () => {
+        rsvpSection.classList.add('open');
+        rsvpBtn.classList.add('hidden');
+      });
+
+      // Close
+      hideBtn.addEventListener('click', () => {
+        rsvpSection.classList.remove('open');
+        setTimeout(() => {
+          rsvpBtn.classList.remove('hidden');
+          turnstileContainer.innerHTML = '<div class="cf-turnstile" data-sitekey="0x4AAAAAACgDGnZ3bqQcsvMO"></div>';
+          if (typeof turnstile !== 'undefined') turnstile.render(turnstileContainer.querySelector('.cf-turnstile'));
+        }, 600);
+      });
+
+      // Submit
+      rsvpForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        showMessage('Saving your spot...', false);
+
+        const turnstileToken = typeof turnstile !== 'undefined' ? turnstile.getResponse() : null;
+        if (!turnstileToken) {
+          showMessage('Please complete the verification.', true);
+          return;
+        }
+
+        const formData = {
+          name: document.getElementById('name').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          attending_count: document.getElementById('plus_one').checked ? 2 : 1,
+          dietary_notes: document.getElementById('dietary_notes').value.trim(),
+          turnstile_token: turnstileToken
+        };
+
+        try {
+          const response = await fetch('https://marblehousewedding.com/api/rsvp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+          });
+
+          if (response.ok) {
+            showMessage("RSVP Saved! We can't wait to see you. 🌿", false);
+            rsvpForm.reset();
+            if (typeof turnstile !== 'undefined') turnstile.reset();
+
+            setTimeout(() => {
+              rsvpSection.classList.remove('open');
+              setTimeout(() => {
+                rsvpBtn.classList.remove('hidden');
+                messageBox.textContent = '';
+                turnstileContainer.innerHTML = '<div class="cf-turnstile" data-sitekey="0x4AAAAAACgDGnZ3bqQcsvMO"></div>';
+                if (typeof turnstile !== 'undefined') turnstile.render(turnstileContainer.querySelector('.cf-turnstile'));
+              }, 600);
+            }, 2000);
+          } else {
+            const result = await response.json();
+            showMessage(result.error || 'Something went wrong.', true);
+          }
+        } catch (error) {
+          showMessage('Network error. Please try again.', true);
+        }
+      });
+
+      function showMessage(text, isError) {
+        messageBox.textContent = text;
+        messageBox.className = `text-sm font-medium ${isError ? 'text-red-500' : 'text-[#5f8670]'}`;
+      }
+    });
+  </script>
+</body>
+</html>
