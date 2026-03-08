@@ -108,7 +108,8 @@ function showLoginOverlay() {
 function unlockPage() {
   document.body.style.visibility = 'visible';
   loadNavigation();
-  // Notify any page scripts that auth is complete
+  // Set flag and fire event so pages can init regardless of timing
+  window._authReady = true;
   window.dispatchEvent(new Event('authReady'));
 }
 

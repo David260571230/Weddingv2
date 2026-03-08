@@ -242,7 +242,11 @@
     });
 
     // Load gallery once auth gate completes
-    window.addEventListener('authReady', loadGallery);
+    if (window._authReady) {
+      loadGallery();
+    } else {
+      window.addEventListener('authReady', loadGallery);
+    }
   </script>
 </body>
 </html>

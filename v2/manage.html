@@ -344,11 +344,19 @@
 
     // ==================== INIT ====================
     // Load all data once auth gate confirms password
-    window.addEventListener('authReady', () => {
+    function initDashboard() {
       loadRSVPs();
       loadSongs();
       loadPhotos();
-    });
+    }
+
+    // If auth already completed before this script ran, init now
+    // Otherwise wait for the event
+    if (window._authReady) {
+      initDashboard();
+    } else {
+      window.addEventListener('authReady', initDashboard);
+    }
   </script>
 </body>
 </html>
