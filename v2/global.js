@@ -108,6 +108,8 @@ function showLoginOverlay() {
 function unlockPage() {
   document.body.style.visibility = 'visible';
   loadNavigation();
+  // Notify any page scripts that auth is complete
+  window.dispatchEvent(new Event('authReady'));
 }
 
 /**

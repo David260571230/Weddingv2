@@ -343,12 +343,12 @@
     }
 
     // ==================== INIT ====================
-    // Load all data after auth completes
-    setTimeout(() => {
+    // Load all data once auth gate confirms password
+    window.addEventListener('authReady', () => {
       loadRSVPs();
       loadSongs();
       loadPhotos();
-    }, 500);
+    });
   </script>
 </body>
 </html>

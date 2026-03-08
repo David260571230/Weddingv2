@@ -241,8 +241,8 @@
       uploadBtn.textContent = 'UPLOAD';
     });
 
-    // Load gallery on page ready
-    document.addEventListener('DOMContentLoaded', loadGallery);
+    // Load gallery once auth gate completes
+    window.addEventListener('authReady', loadGallery);
   </script>
 </body>
 </html>
