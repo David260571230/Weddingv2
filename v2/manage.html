@@ -1,105 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Playlist Management</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #faf9f6; }
-        .font-serif { font-family: 'Playfair Display', serif; }
-        .bg-eucalyptus { background-color: #5f8670; }
-        .text-eucalyptus { color: #5f8670; }
-        .border-lavender { border-color: #e6e6fa; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="global.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Lato', sans-serif; background-color: #faf9f6; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .tab-btn { transition: all 0.2s; }
+    .tab-btn.active {
+      color: #5f8670;
+      border-bottom: 2px solid #5f8670;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
 </head>
-<body class="p-4 md:p-10">
+<body>
 
-    <div id="admin-login" class="max-w-md mx-auto mt-20 p-8 bg-white rounded-2xl shadow-sm border border-lavender text-center">
-        <h1 class="font-serif text-3xl mb-6 text-eucalyptus italic">Management Login</h1>
-        <input type="password" id="admin-pass" placeholder="Enter Password" 
-               class="w-full p-3 rounded-lg border border-gray-200 mb-4 focus:outline-none focus:border-eucalyptus">
-        <button onclick="loadAdminPanel()" class="w-full bg-eucalyptus text-white p-3 rounded-lg font-semibold hover:bg-opacity-90 transition">
-            Access Dashboard
-        </button>
+  <div id="nav-placeholder"></div>
+
+  <div class="max-w-5xl mx-auto px-4 md:px-10 py-8">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="font-serif text-4xl text-[#5f8670] italic mb-2">Admin Dashboard</h1>
+      <p class="text-gray-400 text-sm uppercase tracking-widest">Wedding Management</p>
     </div>
 
-    <div id="admin-dashboard" class="hidden max-w-2xl mx-auto mt-10">
-        <div class="flex justify-between items-end mb-8 border-b border-lavender pb-4">
-            <h1 class="font-serif text-4xl text-eucalyptus">Request Queue</h1>
-            <button onclick="location.reload()" class="text-xs text-gray-400 hover:text-eucalyptus uppercase tracking-widest">Refresh</button>
+    <!-- Tab Nav -->
+    <div class="flex justify-center border-b border-[#e6e6fa] mb-8">
+      <button class="tab-btn active px-6 py-3 text-sm uppercase tracking-widest font-bold text-gray-400" data-tab="rsvps">
+        RSVPs
+      </button>
+      <button class="tab-btn px-6 py-3 text-sm uppercase tracking-widest font-bold text-gray-400" data-tab="songs">
+        Song Requests
+      </button>
+      <button class="tab-btn px-6 py-3 text-sm uppercase tracking-widest font-bold text-gray-400" data-tab="photos">
+        Photo Queue
+      </button>
+    </div>
+
+    <!-- ==================== RSVP PANEL ==================== -->
+    <div id="panel-rsvps" class="tab-panel active">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="font-serif text-2xl text-gray-800">Guest List</h2>
+          <p class="text-sm text-gray-400 mt-1">
+            Total Guests: <span id="total-guest-count" class="font-bold text-[#5f8670]">0</span>
+          </p>
         </div>
-        
-        <div id="admin-song-list" class="space-y-4">
-            </div>
+        <button onclick="exportCSV()" 
+          class="text-xs text-[#5f8670] border border-[#5f8670] px-4 py-2 rounded-full uppercase tracking-widest hover:bg-[#5f8670] hover:text-white transition-all">
+          Export CSV
+        </button>
+      </div>
+
+      <!-- Desktop Table -->
+      <div class="hidden md:block bg-white rounded-2xl shadow-sm border border-[#e6e6fa] overflow-hidden">
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-gray-50 border-b border-[#e6e6fa]">
+            <tr>
+              <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Name</th>
+              <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Party Size</th>
+              <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Dietary Notes</th>
+              <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Date</th>
+            </tr>
+          </thead>
+          <tbody id="rsvp-table-body"></tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div id="rsvp-cards" class="md:hidden space-y-3"></div>
+
+      <p id="rsvp-empty" class="hidden text-gray-400 italic text-center py-12">No RSVPs yet.</p>
     </div>
 
-    <script>
-        let currentPassword = "";
+    <!-- ==================== SONGS PANEL ==================== -->
+    <div id="panel-songs" class="tab-panel">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="font-serif text-2xl text-gray-800">Song Request Queue</h2>
+        <button onclick="loadSongs()" class="text-xs text-gray-400 hover:text-[#5f8670] uppercase tracking-widest">Refresh</button>
+      </div>
+      <div id="song-list" class="space-y-4">
+        <p class="text-gray-400 italic text-center py-12">Loading...</p>
+      </div>
+    </div>
 
-        async function loadAdminPanel() {
-            const pass = document.getElementById('admin-pass').value;
-            const res = await fetch('/api/admin/get-requests', {
-                headers: { 'x-admin-password': pass }
-            });
+    <!-- ==================== PHOTOS PANEL ==================== -->
+    <div id="panel-photos" class="tab-panel">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="font-serif text-2xl text-gray-800">Photo Review Queue</h2>
+        <button onclick="loadPhotos()" class="text-xs text-gray-400 hover:text-[#5f8670] uppercase tracking-widest">Refresh</button>
+      </div>
+      <div id="photo-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <p class="text-gray-400 italic text-center col-span-full py-12">Loading...</p>
+      </div>
+    </div>
 
-            if (res.ok) {
-                currentPassword = pass;
-                document.getElementById('admin-login').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                renderSongs(await res.json());
-            } else {
-                alert("Incorrect password");
-            }
+  </div>
+
+  <script>
+    const API_BASE = "https://marblehousewedding.com";
+
+    function getPassword() {
+      return getAdminPassword();
+    }
+
+    // ==================== TAB SWITCHING ====================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update buttons
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Update panels
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${btn.dataset.tab}`).classList.add('active');
+      });
+    });
+
+    // ==================== RSVP ====================
+    async function loadRSVPs() {
+      try {
+        const res = await fetch(`${API_BASE}/api/admin`, {
+          headers: { 'x-admin-password': getPassword() }
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        renderRSVPs(data);
+      } catch (err) {
+        console.error("RSVP load failed:", err);
+      }
+    }
+
+    function renderRSVPs(data) {
+      const tableBody = document.getElementById('rsvp-table-body');
+      const cards = document.getElementById('rsvp-cards');
+      const empty = document.getElementById('rsvp-empty');
+      const countEl = document.getElementById('total-guest-count');
+
+      if (data.length === 0) {
+        tableBody.innerHTML = '';
+        cards.innerHTML = '';
+        empty.classList.remove('hidden');
+        countEl.textContent = '0';
+        return;
+      }
+
+      empty.classList.add('hidden');
+      let totalGuests = 0;
+      data.forEach(r => totalGuests += r.attending_count);
+      countEl.textContent = totalGuests;
+
+      // Desktop table rows
+      tableBody.innerHTML = data.map(r => `
+        <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+          <td class="p-4">
+            <div class="font-bold text-gray-800">${r.name}</div>
+            <div class="text-xs text-gray-400">${r.email}</div>
+          </td>
+          <td class="p-4 text-center">
+            <span class="bg-gray-100 px-3 py-1 rounded-full text-sm font-bold">${r.attending_count}</span>
+          </td>
+          <td class="p-4 text-sm text-gray-600 italic">
+            ${r.dietary_notes || '<span class="text-gray-300">None</span>'}
+          </td>
+          <td class="p-4 text-xs text-gray-400">
+            ${new Date(r.created_at).toLocaleDateString()}
+          </td>
+        </tr>
+      `).join('');
+
+      // Mobile cards
+      cards.innerHTML = data.map(r => `
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-[#e6e6fa]">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <p class="font-bold text-gray-800">${r.name}</p>
+              <p class="text-xs text-gray-400">${r.email}</p>
+            </div>
+            <span class="bg-gray-100 px-3 py-1 rounded-full text-sm font-bold">${r.attending_count}</span>
+          </div>
+          ${r.dietary_notes ? `<p class="text-sm text-gray-500 italic">${r.dietary_notes}</p>` : ''}
+          <p class="text-xs text-gray-300 mt-2">${new Date(r.created_at).toLocaleDateString()}</p>
+        </div>
+      `).join('');
+    }
+
+    async function exportCSV() {
+      try {
+        const res = await fetch(`${API_BASE}/api/export`, {
+          headers: { 'x-admin-password': getPassword() }
+        });
+        if (!res.ok) return;
+        const csv = await res.text();
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'wedding-rsvps.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error("Export failed:", err);
+      }
+    }
+
+    // ==================== SONGS ====================
+    async function loadSongs() {
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/get-requests`, {
+          headers: { 'x-admin-password': getPassword() }
+        });
+        if (!res.ok) return;
+        renderSongs(await res.json());
+      } catch (err) {
+        console.error("Songs load failed:", err);
+      }
+    }
+
+    function renderSongs(songs) {
+      const container = document.getElementById('song-list');
+      if (songs.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 italic text-center py-12">The queue is empty.</p>';
+        return;
+      }
+
+      container.innerHTML = songs.map(s => {
+        const songName = (s.song_name || '').replace(/'/g, "\\'");
+        const trackId = (s.track_id || '').replace(/'/g, "\\'");
+        return `
+          <div class="flex justify-between items-center p-5 bg-white rounded-xl shadow-sm border border-[#e6e6fa]">
+            <div>
+              <div class="font-semibold text-gray-800">${s.song_name}</div>
+              <div class="text-sm text-gray-500">${s.artist_name}</div>
+            </div>
+            <div class="flex space-x-3">
+              <button onclick="processSong(${s.id}, '${trackId}', 'approve')" 
+                class="bg-[#5f8670] text-white px-4 py-2 rounded-full text-xs font-bold hover:shadow-md transition">
+                Approve
+              </button>
+              <button onclick="processSong(${s.id}, null, 'dismiss')" 
+                class="text-gray-400 px-4 py-2 rounded-full text-xs font-bold hover:text-red-400 transition">
+                Dismiss
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function processSong(requestId, trackId, action) {
+      const endpoint = action === 'approve' ? '/api/admin/approve-song' : '/api/admin/dismiss-song';
+      try {
+        const res = await fetch(`${API_BASE}${endpoint}`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-admin-password': getPassword()
+          },
+          body: JSON.stringify({ requestId, trackId })
+        });
+
+        if (res.ok) {
+          loadSongs();
+        } else {
+          const text = await res.text();
+          alert("Error: " + text);
         }
+      } catch (err) {
+        console.error("Process song failed:", err);
+      }
+    }
 
-        function renderSongs(songs) {
-            const container = document.getElementById('admin-song-list');
-            if (songs.length === 0) {
-                container.innerHTML = `<div class="text-center py-20 text-gray-400 italic">The queue is currently empty.</div>`;
-                return;
-            }
+    // ==================== PHOTOS ====================
+    async function loadPhotos() {
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/get-photos`, {
+          headers: { 'x-admin-password': getPassword() }
+        });
+        if (!res.ok) return;
+        renderPhotos(await res.json());
+      } catch (err) {
+        console.error("Photos load failed:", err);
+      }
+    }
 
-            container.innerHTML = songs.map(s => `
-                <div class="flex justify-between items-center p-5 bg-white rounded-xl shadow-sm border border-lavender">
-                    <div>
-                        <div class="font-semibold text-gray-800">${s.song_name}</div>
-                        <div class="text-sm text-gray-500">${s.artist_name}</div>
-                    </div>
-                    <div class="flex space-x-3">
-                        <button onclick="processSong(${s.id}, '${s.track_id}', 'approve')" 
-                                class="bg-eucalyptus text-white px-4 py-2 rounded-full text-xs font-bold hover:shadow-md transition">
-                            Approve
-                        </button>
-                        <button onclick="processSong(${s.id}, null, 'dismiss')" 
-                                class="text-gray-400 px-4 py-2 rounded-full text-xs font-bold hover:text-red-400 transition">
-                            Dismiss
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
+    function renderPhotos(photos) {
+      const container = document.getElementById('photo-list');
+      if (photos.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 italic text-center col-span-full py-12">No photos to review.</p>';
+        return;
+      }
 
-        async function processSong(requestId, trackId, action) {
-            const endpoint = action === 'approve' ? '/api/admin/approve-song' : '/api/admin/dismiss-song';
-            const res = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'x-admin-password': currentPassword 
-                },
-                body: JSON.stringify({ requestId, trackId })
-            });
-            
-            if (res.ok) {
-                // Refresh the list after action
-                const refreshRes = await fetch('/api/admin/get-requests', {
-                    headers: { 'x-admin-password': currentPassword }
-                });
-                renderSongs(await refreshRes.json());
-            }
-        }
-    </script>
+      container.innerHTML = photos.map(p => `
+        <div class="bg-white rounded-2xl shadow-sm border border-[#e6e6fa] overflow-hidden">
+          <img src="${API_BASE}/api/photos/file/${p.filename}" 
+               alt="Upload by ${p.uploader_name}" 
+               class="w-full h-64 object-cover">
+          <div class="p-4">
+            <div class="flex justify-between items-center mb-3">
+              <div>
+                <p class="font-semibold text-gray-800">${p.uploader_name}</p>
+                <p class="text-xs text-gray-400">${new Date(p.created_at).toLocaleString()}</p>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <button onclick="processPhoto(${p.id}, 'approve')" 
+                class="flex-1 bg-[#5f8670] text-white py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:shadow-md transition">
+                Approve
+              </button>
+              <button onclick="processPhoto(${p.id}, 'dismiss')" 
+                class="flex-1 text-gray-400 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:text-red-400 border border-gray-200 hover:border-red-300 transition">
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function processPhoto(photoId, action) {
+      const endpoint = action === 'approve' ? '/api/admin/approve-photo' : '/api/admin/dismiss-photo';
+      try {
+        const res = await fetch(`${API_BASE}${endpoint}`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-admin-password': getPassword()
+          },
+          body: JSON.stringify({ photoId })
+        });
+        if (res.ok) loadPhotos();
+      } catch (err) {
+        console.error("Process photo failed:", err);
+      }
+    }
+
+    // ==================== INIT ====================
+    // Load all data after auth completes
+    setTimeout(() => {
+      loadRSVPs();
+      loadSongs();
+      loadPhotos();
+    }, 500);
+  </script>
 </body>
 </html>
