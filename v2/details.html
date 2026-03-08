@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Details | Our Wedding</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="global.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .font-sans { font-family: 'Lato', sans-serif; }
+    .timeline-line { position: relative; }
+    .timeline-line::before {
+      content: '';
+      position: absolute;
+      left: 1.45rem;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #e6e6fa;
+    }
+    .timeline-dot {
+      width: 12px;
+      height: 12px;
+      background: #5f8670;
+      border-radius: 50%;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+      margin-top: 0.35rem;
+    }
+    .timeline-dot-outline {
+      width: 12px;
+      height: 12px;
+      border: 2px solid #5f8670;
+      background: white;
+      border-radius: 50%;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+      margin-top: 0.35rem;
+    }
+  </style>
+</head>
+<body class="font-sans bg-[#fdfdfd] text-gray-800">
+
+  <div id="nav-placeholder"></div>
+
+  <!-- Welcome Section -->
+  <section class="max-w-3xl mx-auto pt-20 pb-12 px-6 text-center">
+    <span class="text-[#5f8670] text-3xl mb-4 block">🌿</span>
+    <h1 class="font-serif text-5xl text-[#5f8670] mb-6">The Details</h1>
+    <p class="text-gray-500 leading-relaxed text-lg max-w-xl mx-auto">
+      We are beyond excited to celebrate this day with the people who mean the most to us. 
+      Below you'll find everything you need to know — from the schedule of events to how to get there. 
+      We can't wait to share this moment with you.
+    </p>
+  </section>
+
+  <!-- Date & Venue Header -->
+  <section class="max-w-3xl mx-auto px-6 pb-12">
+    <div class="text-center py-8 border-y border-[#e6e6fa]">
+      <p class="text-sm uppercase tracking-[0.3em] text-gray-400 mb-2">Saturday</p>
+      <h2 class="font-serif text-4xl text-gray-800 mb-2 italic">June 20, 2026</h2>
+      <p class="text-gray-500">Marble House Project &middot; Dorset, Vermont</p>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="max-w-2xl mx-auto px-6 pb-20">
+    <h3 class="font-serif text-3xl text-[#5f8670] text-center mb-12">Schedule of the Day</h3>
+
+    <div class="timeline-line pl-4">
+
+      <!-- Event 1 -->
+      <div class="flex gap-6 mb-10">
+        <div class="timeline-dot"></div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-[#5f8670] font-bold mb-1">3:30 PM</p>
+          <h4 class="text-lg font-bold text-gray-800 mb-1">Guest Arrival</h4>
+          <p class="text-gray-500 text-sm leading-relaxed">
+            Welcome to Marble House! Arrive, find your seat, and take in the beautiful grounds. 
+            Light refreshments will be available as you settle in.
+          </p>
+        </div>
+      </div>
+
+      <!-- Event 2 -->
+      <div class="flex gap-6 mb-10">
+        <div class="timeline-dot"></div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-[#5f8670] font-bold mb-1">4:00 PM</p>
+          <h4 class="text-lg font-bold text-gray-800 mb-1">Ceremony</h4>
+          <p class="text-gray-500 text-sm leading-relaxed">
+            The main event! Join us as we say "I do" on the lawn overlooking the Green Mountains.
+          </p>
+        </div>
+      </div>
+
+      <!-- Event 3 -->
+      <div class="flex gap-6 mb-10">
+        <div class="timeline-dot"></div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-[#5f8670] font-bold mb-1">4:30 PM</p>
+          <h4 class="text-lg font-bold text-gray-800 mb-1">Cocktail Hour</h4>
+          <p class="text-gray-500 text-sm leading-relaxed">
+            Celebrate with drinks, hors d'oeuvres, and mingling while the newlyweds steal away for photos.
+          </p>
+        </div>
+      </div>
+
+      <!-- Event 4 -->
+      <div class="flex gap-6 mb-10">
+        <div class="timeline-dot"></div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-[#5f8670] font-bold mb-1">6:00 PM</p>
+          <h4 class="text-lg font-bold text-gray-800 mb-1">Dinner</h4>
+          <p class="text-gray-500 text-sm leading-relaxed">
+            A farm-to-table dinner served in the barn. Toasts, tears, and plenty of good food.
+          </p>
+        </div>
+      </div>
+
+      <!-- Event 5 -->
+      <div class="flex gap-6 mb-10">
+        <div class="timeline-dot"></div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-[#5f8670] font-bold mb-1">8:00 PM</p>
+          <h4 class="text-lg font-bold text-gray-800 mb-1">Dancing & Celebration</h4>
+          <p class="text-gray-500 text-sm leading-relaxed">
+            Hit the dance floor! This is where your song requests come to life. Let's party.
+          </p>
+        </div>
+      </div>
+
+      <!-- Event 6 -->
+      <div class="flex gap-6">
+        <div class="timeline-dot-outline"></div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-[#5f8670] font-bold mb-1">11:00 PM</p>
+          <h4 class="text-lg font-bold text-gray-800 mb-1">Last Dance & Send-Off</h4>
+          <p class="text-gray-500 text-sm leading-relaxed">
+            One final song, a sparkler send-off, and the start of forever.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Map Section -->
+  <section class="max-w-4xl mx-auto px-6 pb-20">
+    <div class="text-center mb-8">
+      <h3 class="font-serif text-3xl text-[#5f8670] mb-3">Getting There</h3>
+      <p class="text-gray-500">
+        1161 Dorset West Road, Dorset, Vermont 05251
+      </p>
+      <p class="text-gray-400 text-sm mt-1 italic">
+        Please note there is no Uber or Lyft service in the Dorset area — plan transportation accordingly.
+      </p>
+    </div>
+    <div class="rounded-2xl overflow-hidden shadow-sm border border-[#e6e6fa]">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2908.5!2d-73.087639!3d43.230068!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e023a1c68db88f%3A0x5ef5c6c3bfc3a60b!2sMarble%20House%20Project!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
+        width="100%" 
+        height="400" 
+        style="border:0;" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </section>
+
+</body>
+</html>
