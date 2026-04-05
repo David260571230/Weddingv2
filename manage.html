@@ -17,6 +17,32 @@
     }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      font-size: 0.9rem;
+    }
+    .cal-day:hover { background: #f0faf4; }
+    .cal-day.today { background: #5f8670; color: white; font-weight: 700; }
+    .cal-day.today:hover { background: #4a6a58; }
+    .cal-day.selected { outline: 2px solid #5f8670; outline-offset: -2px; }
+    .cal-day.has-notes::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #5f8670;
+    }
+    .cal-day.today.has-notes::after { background: white; }
+    .cal-day.other-month { color: #ccc; }
   </style>
 </head>
 <body>
@@ -39,6 +65,9 @@
       </button>
       <button class="tab-btn px-6 py-3 text-sm uppercase tracking-widest font-bold text-gray-400" data-tab="photos">
         Photo Queue
+      </button>
+      <button class="tab-btn px-6 py-3 text-sm uppercase tracking-widest font-bold text-gray-400" data-tab="calendar">
+        Calendar
       </button>
     </div>
 
@@ -111,6 +140,61 @@
       </div>
       <div id="photo-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <p class="text-gray-400 italic text-center col-span-full py-12">Loading...</p>
+      </div>
+    </div>
+
+    <!-- ==================== CALENDAR PANEL ==================== -->
+    <div id="panel-calendar" class="tab-panel">
+      <div class="max-w-2xl mx-auto">
+        <!-- Month Navigation -->
+        <div class="flex justify-between items-center mb-6">
+          <button onclick="changeMonth(-1)" class="text-[#5f8670] hover:text-[#4a6a58] text-2xl font-bold px-3">‹</button>
+          <h2 id="cal-month-label" class="font-serif text-2xl text-gray-800"></h2>
+          <button onclick="changeMonth(1)" class="text-[#5f8670] hover:text-[#4a6a58] text-2xl font-bold px-3">›</button>
+        </div>
+
+        <!-- Day Headers -->
+        <div class="grid grid-cols-7 mb-2">
+          <div class="text-center text-xs uppercase tracking-widest text-gray-400 font-bold py-2">Sun</div>
+          <div class="text-center text-xs uppercase tracking-widest text-gray-400 font-bold py-2">Mon</div>
+          <div class="text-center text-xs uppercase tracking-widest text-gray-400 font-bold py-2">Tue</div>
+          <div class="text-center text-xs uppercase tracking-widest text-gray-400 font-bold py-2">Wed</div>
+          <div class="text-center text-xs uppercase tracking-widest text-gray-400 font-bold py-2">Thu</div>
+          <div class="text-center text-xs uppercase tracking-widest text-gray-400 font-bold py-2">Fri</div>
+          <div class="text-center text-xs uppercase tracking-widest text-gray-400 font-bold py-2">Sat</div>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div id="cal-grid" class="grid grid-cols-7 gap-1 mb-8"></div>
+
+        <!-- Today Button -->
+        <div class="text-center mb-8">
+          <button onclick="goToToday()" class="text-xs text-[#5f8670] border border-[#5f8670] px-4 py-2 rounded-full uppercase tracking-widest hover:bg-[#5f8670] hover:text-white transition-all">
+            Today
+          </button>
+        </div>
+
+        <!-- Selected Day Notes -->
+        <div id="cal-notes-section" class="hidden border-t border-[#e6e6fa] pt-8">
+          <div class="flex justify-between items-center mb-6">
+            <h3 id="cal-notes-date" class="font-serif text-xl text-gray-800"></h3>
+          </div>
+
+          <!-- Existing Notes -->
+          <div id="cal-notes-list" class="space-y-3 mb-6"></div>
+
+          <!-- Add Note Form -->
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-[#e6e6fa]">
+            <textarea id="cal-note-input" rows="2" placeholder="Add a note for this day..."
+              class="w-full border-b-2 border-[#e6e6fa] p-2 outline-none focus:border-[#5f8670] bg-transparent text-sm resize-none"></textarea>
+            <div class="flex justify-end mt-3">
+              <button onclick="addNote()" 
+                class="bg-[#5f8670] text-white px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:shadow-md transition">
+                Add Note
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -429,6 +513,200 @@
       }
     }
 
+    // ==================== CALENDAR ====================
+    let calYear, calMonth, selectedDate = null;
+    let calendarNotes = {}; // { "2026-06-20": [{id, title, description, ...}] }
+
+    function initCalendar() {
+      const now = new Date();
+      calYear = now.getFullYear();
+      calMonth = now.getMonth();
+      loadCalendarMonth();
+    }
+
+    function changeMonth(delta) {
+      calMonth += delta;
+      if (calMonth > 11) { calMonth = 0; calYear++; }
+      if (calMonth < 0) { calMonth = 11; calYear--; }
+      loadCalendarMonth();
+    }
+
+    function goToToday() {
+      const now = new Date();
+      calYear = now.getFullYear();
+      calMonth = now.getMonth();
+      const todayStr = formatDate(now.getFullYear(), now.getMonth(), now.getDate());
+      selectedDate = todayStr;
+      loadCalendarMonth();
+    }
+
+    function formatDate(y, m, d) {
+      return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+
+    async function loadCalendarMonth() {
+      // Fetch notes for visible range (prev month end + current + next month start)
+      const firstDay = new Date(calYear, calMonth, 1);
+      const lastDay = new Date(calYear, calMonth + 1, 0);
+      
+      // Pad to include visible days from adjacent months
+      const startDate = new Date(firstDay);
+      startDate.setDate(startDate.getDate() - firstDay.getDay());
+      const endDate = new Date(lastDay);
+      endDate.setDate(endDate.getDate() + (6 - lastDay.getDay()));
+
+      const from = formatDate(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const to = formatDate(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/calendar-events?from=${from}&to=${to}`, {
+          headers: { 'x-admin-password': getPassword() }
+        });
+        if (res.ok) {
+          const events = await res.json();
+          calendarNotes = {};
+          events.forEach(e => {
+            if (!calendarNotes[e.event_date]) calendarNotes[e.event_date] = [];
+            calendarNotes[e.event_date].push(e);
+          });
+        }
+      } catch (err) {
+        console.error("Calendar load failed:", err);
+      }
+
+      renderCalendar();
+
+      if (selectedDate) {
+        showNotesForDate(selectedDate);
+      }
+    }
+
+    function renderCalendar() {
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+      
+      document.getElementById('cal-month-label').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+      const grid = document.getElementById('cal-grid');
+      const firstDay = new Date(calYear, calMonth, 1);
+      const lastDay = new Date(calYear, calMonth + 1, 0);
+      const today = new Date();
+      const todayStr = formatDate(today.getFullYear(), today.getMonth(), today.getDate());
+
+      let cells = '';
+
+      // Previous month padding
+      const prevMonth = new Date(calYear, calMonth, 0);
+      for (let i = firstDay.getDay() - 1; i >= 0; i--) {
+        const d = prevMonth.getDate() - i;
+        const dateStr = formatDate(prevMonth.getFullYear(), prevMonth.getMonth(), d);
+        const hasNotes = calendarNotes[dateStr] ? 'has-notes' : '';
+        const sel = selectedDate === dateStr ? 'selected' : '';
+        cells += `<div class="cal-day other-month ${hasNotes} ${sel}" onclick="selectDate('${dateStr}')">${d}</div>`;
+      }
+
+      // Current month days
+      for (let d = 1; d <= lastDay.getDate(); d++) {
+        const dateStr = formatDate(calYear, calMonth, d);
+        const isToday = dateStr === todayStr ? 'today' : '';
+        const hasNotes = calendarNotes[dateStr] ? 'has-notes' : '';
+        const sel = selectedDate === dateStr ? 'selected' : '';
+        cells += `<div class="cal-day ${isToday} ${hasNotes} ${sel}" onclick="selectDate('${dateStr}')">${d}</div>`;
+      }
+
+      // Next month padding
+      const remaining = 7 - ((firstDay.getDay() + lastDay.getDate()) % 7);
+      if (remaining < 7) {
+        for (let d = 1; d <= remaining; d++) {
+          const dateStr = formatDate(calYear, calMonth + 1 > 11 ? 0 : calMonth + 1, d);
+          const hasNotes = calendarNotes[dateStr] ? 'has-notes' : '';
+          const sel = selectedDate === dateStr ? 'selected' : '';
+          cells += `<div class="cal-day other-month ${hasNotes} ${sel}" onclick="selectDate('${dateStr}')">${d}</div>`;
+        }
+      }
+
+      grid.innerHTML = cells;
+    }
+
+    function selectDate(dateStr) {
+      selectedDate = dateStr;
+      renderCalendar();
+      showNotesForDate(dateStr);
+    }
+
+    function showNotesForDate(dateStr) {
+      const section = document.getElementById('cal-notes-section');
+      const dateLabel = document.getElementById('cal-notes-date');
+      const list = document.getElementById('cal-notes-list');
+      
+      section.classList.remove('hidden');
+
+      // Format the date nicely
+      const [y, m, d] = dateStr.split('-');
+      const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dateLabel.textContent = dateObj.toLocaleDateString('en-US', options);
+
+      const notes = calendarNotes[dateStr] || [];
+
+      if (notes.length === 0) {
+        list.innerHTML = '<p class="text-gray-400 italic text-sm">No notes for this day.</p>';
+      } else {
+        list.innerHTML = notes.map(n => `
+          <div class="flex justify-between items-start bg-white rounded-xl p-4 shadow-sm border border-[#e6e6fa]">
+            <div class="flex-1">
+              <p class="text-gray-800 text-sm">${n.title}</p>
+              ${n.description ? `<p class="text-gray-400 text-xs mt-1">${n.description}</p>` : ''}
+              <p class="text-gray-300 text-xs mt-2">${new Date(n.created_at).toLocaleString()}</p>
+            </div>
+            <button onclick="deleteNote(${n.id})" class="text-gray-300 hover:text-red-400 text-xs ml-3 transition">✕</button>
+          </div>
+        `).join('');
+      }
+    }
+
+    async function addNote() {
+      if (!selectedDate) return;
+      const input = document.getElementById('cal-note-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/calendar-events`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-password': getPassword()
+          },
+          body: JSON.stringify({ title: text, event_date: selectedDate })
+        });
+        if (res.ok) {
+          input.value = '';
+          await loadCalendarMonth();
+        }
+      } catch (err) {
+        console.error("Add note failed:", err);
+      }
+    }
+
+    async function deleteNote(noteId) {
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/delete-calendar-event`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-password': getPassword()
+          },
+          body: JSON.stringify({ eventId: noteId })
+        });
+        if (res.ok) {
+          await loadCalendarMonth();
+        }
+      } catch (err) {
+        console.error("Delete note failed:", err);
+      }
+    }
+
     // ==================== INIT ====================
     // Poll until auth is ready and functions are available
     function initDashboard() {
@@ -436,6 +714,7 @@
       loadFailedRSVPs();
       loadSongs();
       loadPhotos();
+      initCalendar();
     }
 
     function waitForAuth() {
