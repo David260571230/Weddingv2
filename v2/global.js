@@ -43,7 +43,7 @@ function showLoginOverlay() {
     ">
       <div style="text-align:center; max-width:360px; padding:2rem;">
         <h1 style="font-family:'Playfair Display',serif; font-size:2rem; color:#5f8670; font-style:italic; margin-bottom:0.5rem;">
-          M & B
+          E & D
         </h1>
         <p style="color:#999; font-size:0.85rem; margin-bottom:2rem; letter-spacing:0.1em; text-transform:uppercase;">
           Dev Preview

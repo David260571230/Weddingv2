@@ -55,42 +55,68 @@ document.addEventListener("DOMContentLoaded", () => {
         turnstile_token: turnstileToken
       };
 
+      // Retry logic — up to 3 attempts with 2s delay
+      let lastError = "";
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          if (attempt > 1) {
+            showMessage(`Retrying... (attempt ${attempt}/3)`, false);
+            await new Promise(r => setTimeout(r, 2000));
+          }
+
+          const response = await fetch("https://marblehousewedding.com/api/rsvp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+          });
+
+          if (response.ok) {
+            showMessage("RSVP Saved! We can't wait to see you. 🌿", false);
+            rsvpForm.reset();
+            if (typeof turnstile !== "undefined") turnstile.reset();
+
+            setTimeout(() => {
+              rsvpSection.style.maxHeight = "0";
+              rsvpSection.style.opacity = "0";
+              setTimeout(() => {
+                rsvpBtn.classList.remove("hidden");
+                messageBox.textContent = "";
+                turnstileContainer.innerHTML = "";
+              }, 600);
+            }, 2000);
+            return; // Success — exit
+          } else {
+            lastError = `Server error (${response.status})`;
+          }
+        } catch (error) {
+          lastError = `Network error: ${error.message}`;
+        }
+      }
+
+      // All 3 attempts failed — log the failure to the backend
       try {
-        const response = await fetch("https://marblehousewedding.com/api/rsvp", {
+        await fetch("https://marblehousewedding.com/api/rsvp-failed", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData)
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            attending_count: formData.attending_count,
+            unable_to_attend: formData.unable_to_attend,
+            dietary_notes: formData.dietary_notes,
+            error_message: lastError
+          })
         });
-
-        // const result = await response.json();
-
-        if (response.ok) {
-          // 1. Show the success message
-          showMessage("RSVP Saved! We can't wait to see you. 🌿", false);
-          
-          // 2. Clear the form and reset Turnstile
-          rsvpForm.reset();
-          if (typeof turnstile !== "undefined") turnstile.reset();
-
-          // 3. Wait 2 seconds so they can read the message, then auto-hide
-          setTimeout(() => {
-            rsvpSection.style.maxHeight = "0";
-            rsvpSection.style.opacity = "0";
-            
-            setTimeout(() => {
-              rsvpBtn.classList.remove("hidden");
-              messageBox.textContent = ""; // Clear message for next time
-              turnstileContainer.innerHTML = ""; // Clean up
-            }, 600);
-          }, 2000);
-
-        } else {
-          const result = await response.json();
-          showMessage(result.error || "Something went wrong.", true);
-        }
-      } catch (error) {
-        showMessage("Network error. Please try again.", true);
+      } catch (logErr) {
+        // Even the error log failed — nothing more we can do
       }
+
+      showMessage("", true);
+      messageBox.innerHTML = `
+        We're having trouble saving your RSVP. Please reach out to us directly:<br><br>
+        <strong>David:</strong> <a href="tel:6033220791" class="underline">603-322-0791</a><br>
+        <strong>Elizabeth:</strong> <a href="tel:5085968523" class="underline">508-596-8523</a>
+      `;
     });
   }
 
