@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Details | Our Wedding</title>
@@ -148,6 +147,113 @@
 
     </div>
   </section>
+
+  <!-- Weather Widget (only visible within 14 days of the wedding) -->
+  <section id="weather-section" class="max-w-3xl mx-auto px-6 pb-20 hidden">
+    <div class="text-center mb-8">
+      <h3 class="font-serif text-3xl text-[#5f8670] mb-3">Wedding Day Weather</h3>
+      <p class="text-gray-400 text-sm italic">Live forecast for Dorset, Vermont on June 20</p>
+    </div>
+    <div id="weather-card" class="bg-white rounded-2xl shadow-sm border border-[#e6e6fa] p-8 text-center">
+      <p class="text-gray-400 italic">Loading forecast...</p>
+    </div>
+  </section>
+
+  <script>
+    (async function() {
+      const WEDDING_DATE = new Date('2026-06-20');
+      const now = new Date();
+      const daysUntil = 4; //Math.ceil((WEDDING_DATE - now) / (1000 * 60 * 60 * 24));
+
+      // Only show within 14 days
+      if (daysUntil > 14 || daysUntil < 0) return;
+
+      const section = document.getElementById('weather-section');
+      const card = document.getElementById('weather-card');
+      section.classList.remove('hidden');
+
+      try {
+        // Open-Meteo free API — Dorset, VT coordinates
+        const lat = 43.2301;
+        const lon = -73.0876;
+        const res = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&timezone=America/New_York&start_date=2026-06-20&end_date=2026-06-20`
+        );
+
+        if (!res.ok) throw new Error('Forecast unavailable');
+
+        const data = await res.json();
+        const daily = data.daily;
+
+        if (!daily || !daily.time || daily.time.length === 0) {
+          // Wedding date not in forecast range yet
+          card.innerHTML = `
+            <span class="text-4xl mb-3 block">🌤️</span>
+            <p class="text-gray-600">The detailed forecast for June 20 isn't available yet.</p>
+            <p class="text-gray-400 text-sm mt-2">Check back closer to the date — typically available 7 days out.</p>
+            <div class="mt-4 pt-4 border-t border-[#e6e6fa]">
+              <p class="text-gray-400 text-xs">Late June in Dorset averages highs around 75–80°F with cool evenings.</p>
+            </div>
+          `;
+          return;
+        }
+
+        const high = Math.round(daily.temperature_2m_max[0]);
+        const low = Math.round(daily.temperature_2m_min[0]);
+        const rainChance = daily.precipitation_probability_max[0];
+        const code = daily.weathercode[0];
+
+        // Map weather codes to emojis and descriptions
+        const weatherMap = {
+          0: ['☀️', 'Clear skies'],
+          1: ['🌤️', 'Mostly clear'],
+          2: ['⛅', 'Partly cloudy'],
+          3: ['☁️', 'Overcast'],
+          45: ['🌫️', 'Foggy'],
+          48: ['🌫️', 'Foggy'],
+          51: ['🌦️', 'Light drizzle'],
+          53: ['🌦️', 'Drizzle'],
+          55: ['🌧️', 'Heavy drizzle'],
+          61: ['🌧️', 'Light rain'],
+          63: ['🌧️', 'Rain'],
+          65: ['🌧️', 'Heavy rain'],
+          80: ['🌦️', 'Light showers'],
+          81: ['🌧️', 'Showers'],
+          82: ['⛈️', 'Heavy showers'],
+          95: ['⛈️', 'Thunderstorm'],
+        };
+
+        const [emoji, desc] = weatherMap[code] || ['🌤️', 'Fair weather'];
+
+        card.innerHTML = `
+          <span class="text-5xl mb-4 block">${emoji}</span>
+          <p class="font-serif text-2xl text-gray-800 mb-1">${desc}</p>
+          <div class="flex justify-center gap-8 mt-4 mb-4">
+            <div>
+              <p class="text-3xl font-bold text-[#5f8670]">${high}°</p>
+              <p class="text-xs text-gray-400 uppercase tracking-widest">High</p>
+            </div>
+            <div>
+              <p class="text-3xl font-bold text-gray-400">${low}°</p>
+              <p class="text-xs text-gray-400 uppercase tracking-widest">Low</p>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-[#e6e6fa]">
+            <p class="text-gray-500 text-sm">
+              ${rainChance}% chance of rain
+              ${rainChance > 30 ? ' — consider bringing an umbrella!' : ' — looking good!'}
+            </p>
+          </div>
+        `;
+      } catch (err) {
+        card.innerHTML = `
+          <span class="text-4xl mb-3 block">🌤️</span>
+          <p class="text-gray-600">Forecast temporarily unavailable.</p>
+          <p class="text-gray-400 text-sm mt-2">Late June in Dorset averages highs around 75–80°F with cool evenings.</p>
+        `;
+      }
+    })();
+  </script>
 
   <!-- Map Section -->
   <section class="max-w-4xl mx-auto px-6 pb-20">
