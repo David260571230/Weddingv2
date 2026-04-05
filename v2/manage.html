@@ -21,8 +21,6 @@
 </head>
 <body>
 
-  <div id="nav-placeholder"></div>
-
   <div class="max-w-5xl mx-auto px-4 md:px-10 py-8">
 
     <!-- Header -->
@@ -34,10 +32,7 @@
     <!-- Tab Nav -->
     <div class="flex justify-center flex-wrap border-b border-[#e6e6fa] mb-8">
       <button class="tab-btn active px-6 py-3 text-sm uppercase tracking-widest font-bold text-gray-400" data-tab="rsvps">
-        RSVPs
-      </button>
-      <button class="tab-btn px-6 py-3 text-sm uppercase tracking-widest font-bold text-gray-400" data-tab="failed">
-        Failed RSVPs
+        Guest List
       </button>
       <button class="tab-btn px-6 py-3 text-sm uppercase tracking-widest font-bold text-gray-400" data-tab="songs">
         Song Requests
@@ -81,19 +76,19 @@
       <div id="rsvp-cards" class="md:hidden space-y-3"></div>
 
       <p id="rsvp-empty" class="hidden text-gray-400 italic text-center py-12">No RSVPs yet.</p>
-    </div>
 
-    <!-- ==================== FAILED RSVPS PANEL ==================== -->
-    <div id="panel-failed" class="tab-panel">
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h2 class="font-serif text-2xl text-gray-800">Failed RSVPs</h2>
-          <p class="text-sm text-gray-400 mt-1">Submissions that failed after 3 retries. Recover to add to the guest list.</p>
+      <!-- Failed RSVPs Section (within RSVP panel) -->
+      <div class="mt-12 pt-8 border-t border-[#e6e6fa]">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h2 class="font-serif text-2xl text-gray-800">Failed RSVPs</h2>
+            <p class="text-sm text-gray-400 mt-1">Submissions that failed after 3 retries. Recover to add to the guest list.</p>
+          </div>
+          <button onclick="loadFailedRSVPs()" class="text-xs text-gray-400 hover:text-[#5f8670] uppercase tracking-widest">Refresh</button>
         </div>
-        <button onclick="loadFailedRSVPs()" class="text-xs text-gray-400 hover:text-[#5f8670] uppercase tracking-widest">Refresh</button>
-      </div>
-      <div id="failed-rsvp-list" class="space-y-4">
-        <p class="text-gray-400 italic text-center py-12">Loading...</p>
+        <div id="failed-rsvp-list" class="space-y-4">
+          <p class="text-gray-400 italic text-center py-12">Loading...</p>
+        </div>
       </div>
     </div>
 
