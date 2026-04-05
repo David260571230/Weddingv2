@@ -65,6 +65,7 @@
           <thead class="bg-gray-50 border-b border-[#e6e6fa]">
             <tr>
               <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Name</th>
+              <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Status</th>
               <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Party Size</th>
               <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Dietary Notes</th>
               <th class="p-4 text-xs uppercase tracking-widest text-gray-500">Date</th>
@@ -163,6 +164,11 @@
             <div class="text-xs text-gray-400">${r.email}</div>
           </td>
           <td class="p-4 text-center">
+            ${r.unable_to_attend
+              ? '<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">Declined</span>'
+              : '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Attending</span>'}
+          </td>
+          <td class="p-4 text-center">
             <span class="bg-gray-100 px-3 py-1 rounded-full text-sm font-bold">${r.attending_count}</span>
           </td>
           <td class="p-4 text-sm text-gray-600 italic">
@@ -182,7 +188,12 @@
               <p class="font-bold text-gray-800">${r.name}</p>
               <p class="text-xs text-gray-400">${r.email}</p>
             </div>
+            <div class="flex flex-col items-end gap-1">
+              ${r.unable_to_attend
+                ? '<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">Declined</span>'
+                : '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Attending</span>'}
             <span class="bg-gray-100 px-3 py-1 rounded-full text-sm font-bold">${r.attending_count}</span>
+          </div>
           </div>
           ${r.dietary_notes ? `<p class="text-sm text-gray-500 italic">${r.dietary_notes}</p>` : ''}
           <p class="text-xs text-gray-300 mt-2">${new Date(r.created_at).toLocaleDateString()}</p>

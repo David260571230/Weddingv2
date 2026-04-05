@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
         name: document.getElementById("name").value.trim(),
         email: document.getElementById("email").value.trim(),
         attending_count: document.getElementById("plus_one").checked ? 2 : 1,
+        unable_to_attend: document.getElementById("unable_to_attend").checked ? 1 : 0,
         dietary_notes: document.getElementById("dietary_notes").value.trim(),
         turnstile_token: turnstileToken
       };
