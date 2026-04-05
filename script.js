@@ -71,7 +71,19 @@ document.addEventListener("DOMContentLoaded", () => {
           });
 
           if (response.ok) {
-            showMessage("RSVP Saved! We can't wait to see you. 🌿", false);
+            const isDeclined = formData.unable_to_attend === 1;
+            messageBox.innerHTML = isDeclined
+              ? `<div class="text-center py-3">
+                  <span class="text-2xl mb-2 block">💛</span>
+                  <p class="font-bold text-[#5f8670]">Thanks for letting us know.</p>
+                  <p class="text-gray-500 text-xs mt-1">We'll miss you — hope to celebrate with you another time!</p>
+                </div>`
+              : `<div class="text-center py-3">
+                  <span class="text-2xl mb-2 block">🌿</span>
+                  <p class="font-bold text-[#5f8670]">RSVP Saved!</p>
+                  <p class="text-gray-500 text-xs mt-1">We can't wait to celebrate with you!</p>
+                </div>`;
+            messageBox.className = 'mt-6 text-sm font-medium';
             rsvpForm.reset();
             if (typeof turnstile !== "undefined") turnstile.reset();
 
