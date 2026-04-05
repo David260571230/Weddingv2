@@ -239,15 +239,8 @@
       uploadBtn.textContent = 'UPLOAD';
     });
 
-    // Load gallery once auth is ready
-    function waitForAuth() {
-      if (typeof getAdminPassword === 'function' && sessionStorage.getItem('v2_admin_pass')) {
-        loadGallery();
-      } else {
-        setTimeout(waitForAuth, 100);
-      }
-    }
-    waitForAuth();
+    // Load gallery on page ready
+    document.addEventListener('DOMContentLoaded', loadGallery);
   </script>
 </body>
 </html>
